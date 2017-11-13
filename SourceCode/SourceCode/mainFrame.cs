@@ -22,11 +22,6 @@ namespace SourceCode
             this.Close();
         }
 
-        private void btnCalculate_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         private void btnCreateUM_Click(object sender, EventArgs e)
         {
             if(checkInputRowCol(textRowUM,textColUM))
@@ -59,5 +54,15 @@ namespace SourceCode
             }
             return false;
         }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+
+     1   }
     }
 }

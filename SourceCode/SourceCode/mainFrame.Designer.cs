@@ -51,9 +51,9 @@
             this.groupBoxAA = new System.Windows.Forms.GroupBox();
             this.dataAA = new System.Windows.Forms.DataGridView();
             this.groupBoxVF = new System.Windows.Forms.GroupBox();
-            this.btnLogs = new ns1.BunifuThinButton2();
             this.btnClear = new ns1.BunifuThinButton2();
             this.btnCalculate = new ns1.BunifuThinButton2();
+            this.groupBoxLogs = new System.Windows.Forms.GroupBox();
             this.panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnClose)).BeginInit();
             this.groupBoxUM.SuspendLayout();
@@ -86,7 +86,7 @@
             this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnClose.Image = global::SourceCode.Properties.Resources.icons8_multiply_filled_black;
             this.btnClose.ImageActive = null;
-            this.btnClose.Location = new System.Drawing.Point(0, 0);
+            this.btnClose.Location = new System.Drawing.Point(1273, 0);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(42, 42);
             this.btnClose.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -315,35 +315,10 @@
             this.groupBoxVF.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBoxVF.Location = new System.Drawing.Point(874, 48);
             this.groupBoxVF.Name = "groupBoxVF";
-            this.groupBoxVF.Size = new System.Drawing.Size(424, 584);
+            this.groupBoxVF.Size = new System.Drawing.Size(424, 161);
             this.groupBoxVF.TabIndex = 5;
             this.groupBoxVF.TabStop = false;
             this.groupBoxVF.Text = "Vertical Fragmentation :";
-            // 
-            // btnLogs
-            // 
-            this.btnLogs.ActiveBorderThickness = 1;
-            this.btnLogs.ActiveCornerRadius = 20;
-            this.btnLogs.ActiveFillColor = System.Drawing.Color.SeaGreen;
-            this.btnLogs.ActiveForecolor = System.Drawing.Color.White;
-            this.btnLogs.ActiveLineColor = System.Drawing.Color.SeaGreen;
-            this.btnLogs.BackColor = System.Drawing.SystemColors.Control;
-            this.btnLogs.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnLogs.BackgroundImage")));
-            this.btnLogs.ButtonText = "Logs";
-            this.btnLogs.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnLogs.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLogs.ForeColor = System.Drawing.Color.SeaGreen;
-            this.btnLogs.IdleBorderThickness = 1;
-            this.btnLogs.IdleCornerRadius = 20;
-            this.btnLogs.IdleFillColor = System.Drawing.Color.White;
-            this.btnLogs.IdleForecolor = System.Drawing.Color.SeaGreen;
-            this.btnLogs.IdleLineColor = System.Drawing.Color.SeaGreen;
-            this.btnLogs.Location = new System.Drawing.Point(396, 640);
-            this.btnLogs.Margin = new System.Windows.Forms.Padding(5);
-            this.btnLogs.Name = "btnLogs";
-            this.btnLogs.Size = new System.Drawing.Size(181, 41);
-            this.btnLogs.TabIndex = 7;
-            this.btnLogs.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnClear
             // 
@@ -369,6 +344,7 @@
             this.btnClear.Size = new System.Drawing.Size(181, 41);
             this.btnClear.TabIndex = 6;
             this.btnClear.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnCalculate
             // 
@@ -396,12 +372,22 @@
             this.btnCalculate.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click);
             // 
+            // groupBoxLogs
+            // 
+            this.groupBoxLogs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBoxLogs.Location = new System.Drawing.Point(874, 215);
+            this.groupBoxLogs.Name = "groupBoxLogs";
+            this.groupBoxLogs.Size = new System.Drawing.Size(424, 417);
+            this.groupBoxLogs.TabIndex = 8;
+            this.groupBoxLogs.TabStop = false;
+            this.groupBoxLogs.Text = "Logs :";
+            // 
             // mainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1315, 691);
-            this.Controls.Add(this.btnLogs);
+            this.Controls.Add(this.groupBoxLogs);
             this.Controls.Add(this.groupBoxVF);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.btnCalculate);
@@ -442,7 +428,6 @@
         private ns1.BunifuThinButton2 btnClear;
         private ns1.BunifuThinButton2 btnCalculate;
         private System.Windows.Forms.GroupBox groupBoxVF;
-        private ns1.BunifuThinButton2 btnLogs;
         private System.Windows.Forms.DataGridView dataUM;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textColUM;
@@ -455,6 +440,7 @@
         private System.Windows.Forms.TextBox textColAFM;
         private ns1.BunifuFlatButton btnCreateAFM;
         private ns1.BunifuFlatButton btnCreateUM;
+        private System.Windows.Forms.GroupBox groupBoxLogs;
     }
 }
 
