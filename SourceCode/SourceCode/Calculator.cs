@@ -47,6 +47,54 @@ namespace SourceCode
             }
         }
 
+
+
+        #region Calculation
+        private void CalculateAA()
+        {
+            int checkpoint = 0;
+            for (int i = 0; i < AA.Count; i++)
+            {
+                for (int j = checkpoint; j < AA[0].Count; j++)
+                {
+                    int val = FindUsage(i, j);
+                    AA[i][j] = val;
+                    AA[j][i] = val;
+                }
+                checkpoint++;
+            }
+        }
+
+        private int FindUsage(int first_A, int second_A)
+        {
+            int res = 0;
+            for (int i = 0; i < UM.Count; i++)
+            {
+                if (UM[i][first_A] == 1 && UM[i][second_A] == 1)
+                {
+                    res += GetSumQueriesAccess(i);
+                }
+            }
+            return res;
+        }
+
+        private int GetSumQueriesAccess(int row)
+        {
+            int res = 0;
+            for (int i = 0; i < AF[0].Count; i++)
+                res += AF[row][i];
+            return res;
+        }
+
+        private void CalculateCA()
+        {
+
+        }
+        #endregion
+
+
+
+        #region Utilities
         private void Create_AA_CA()
         {
             //Create sample AA, CA for later use
@@ -62,34 +110,6 @@ namespace SourceCode
             CA = matrix;
         }
 
-        private void CalculateAA()
-        {
-            int checkpoint = 0;
-            for (int i = 0; i < AA.Count; i++)
-            {
-                for(int j = checkpoint; j< AA[0].Count; j++)
-                {
-                    int val = FindUsage(i, j);
-                    AA[i][j] = val;
-                    AA[j][i] = val;
-                }
-                checkpoint++;
-            }
-        }
-
-        private int FindUsage(int first_A, int second_A)
-        {
-            int res = 0;
-            for(int i = 0; i < UM.Count; i++)
-            {
-                if(UM[i][first_A] == 1 && UM[i][second_A] == 1)
-                {
-                    res += GetSumQueriesAccess(i);
-                }
-            }
-            return res;
-        }
-
         internal DataGridView ExportAAMatrix()
         {
             DataGridView newMatrix = new DataGridView();
@@ -103,20 +123,7 @@ namespace SourceCode
             }
             return newMatrix;
         }
-
-        private int GetSumQueriesAccess(int row)
-        {
-            int res = 0;
-            for (int i = 0; i < AF[0].Count; i++)
-                res += AF[row][i];
-            return res;
-        }
-
-        private void CalculateCA()
-        {
-            
-        }
-
+    
         private bool CheckDataValidity()
         {
             if (this.UM.Count < 0
@@ -126,5 +133,6 @@ namespace SourceCode
                 return false;
             return true;
         }
+        #endregion
     }
 }
