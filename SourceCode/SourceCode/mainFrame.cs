@@ -7,14 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SourceCode;
 
 namespace SourceCode
 {
     public partial class mainFrame : Form
     {
+        Calculator myCal;
         public mainFrame()
         {
             InitializeComponent();
+             myCal = new Calculator();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -22,47 +25,75 @@ namespace SourceCode
             this.Close();
         }
 
-        private void btnCreateUM_Click(object sender, EventArgs e)
+        private void DrawMatrix(DataGridView dataView, string row, string col)
         {
-            if(checkInputRowCol(textRowUM,textColUM))
-            {
-                DrawMatrix(dataUM, int.Parse(textRowUM.Text), int.Parse(textColUM.Text));
-            }
+            dataView.RowCount = int.Parse(row);
+            dataView.ColumnCount = int.Parse(col);
         }
 
-        private void btnCreateAFM_Click(object sender, EventArgs e)
+        private bool checkInput()
         {
-            if(checkInputRowCol(textRowAFM, textColAFM))
+            if (textAttributes.Text != "" && textQueries.Text != "" && textSites.Text != "")
             {
-                DrawMatrix(dataAFM, int.Parse(textRowAFM.Text), int.Parse(textColAFM.Text));
-            }
-        }
-
-        private void DrawMatrix(DataGridView dataView, int row, int col)
-        {
-            dataView.RowCount = row;
-            dataView.ColumnCount = col;
-        }
-
-        private bool checkInputRowCol(TextBox textRow, TextBox textCol)
-        {
-            if (textRow.Text != "" && textCol.Text != "")
-            {
-                int temp1, temp2;
-                if (int.TryParse(textRow.Text, out temp1) && int.TryParse(textCol.Text, out temp2))
+                int temp1, temp2, temp3;
+                if (int.TryParse(textAttributes.Text, out temp1) 
+                    && int.TryParse(textQueries.Text, out temp2)
+                    && int.TryParse(textSites.Text, out temp3))
                     return true;
             }
             return false;
         }
 
-        private void btnCalculate_Click(object sender, EventArgs e)
+        private void buttonCreateMatrix_Click(object sender, EventArgs e)
         {
+            if (checkInput())
+            {
+                DrawMatrix(dataUM, textQueries.Text, textAttributes.Text);
+                NameRowAndColumn(dataUM, 'q', 'A');
+                DrawMatrix(dataAF, textQueries.Text, textSites.Text);
+                NameRowAndColumn(dataAF,'q','S');
+                
+            }
+        }
 
+        private void NameRowAndColumn(DataGridView data, char rol, char col)
+        {
+            for (int i = 0; i < data.ColumnCount; i++)
+                data.Columns[i].HeaderText = col + (i + 1).ToString();
+            for (int i = 0; i < data.RowCount; i++)
+                data.Rows[i].HeaderCell.Value = rol + (i + 1).ToString();
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
+            dataUM.Rows.Clear();
+            dataUM.Columns.Clear();
+            dataAF.Rows.Clear();
+            dataAF.Columns.Clear();
+            dataAA.Rows.Clear();
+            dataAA.Columns.Clear();
+            dataCA.Rows.Clear();
+            dataCA.Columns.Clear();
+            textLogs.Text = String.Empty;
+        }
 
-     1   }
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            myCal.GetData(dataUM,"UM");
+            myCal.GetData(dataAF, "AF");
+            myCal.Calculate();
+            DataGridView AA = myCal.ExportAAMatrix();
+            DisplayMatrix(dataAA,AA);
+        }
+
+        private void DisplayMatrix(DataGridView data, DataGridView source)
+        {
+            data.ColumnCount = source.ColumnCount;
+            data.RowCount = source.RowCount;
+            for (int i = 0; i < data.RowCount; i++)
+                for (int j = 0; j < data.Rows[i].Cells.Count; j++)
+                    data.Rows[i].Cells[j].Value = source.Rows[i].Cells[j].Value;
+            NameRowAndColumn(data,'A','A');
+        }
     }
 }
