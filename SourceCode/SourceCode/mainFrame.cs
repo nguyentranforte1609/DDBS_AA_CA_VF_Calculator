@@ -61,7 +61,10 @@ namespace SourceCode
             myCal.GetData(dataAF, "AF");
             myCal.Calculate();
             DataGridView AA = myCal.ExportAAMatrix();
+            DataGridView CA = myCal.ExportCAMatrix();
             DisplayMatrix(dataAA, AA);
+            DisplayMatrix(dataCA, CA);
+
         }
         #endregion
 

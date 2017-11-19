@@ -345,6 +345,7 @@
             this.dataCA.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataCA.Location = new System.Drawing.Point(11, 15);
             this.dataCA.Name = "dataCA";
+            this.dataCA.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dataCA.Size = new System.Drawing.Size(402, 268);
             this.dataCA.TabIndex = 2;
             // 
