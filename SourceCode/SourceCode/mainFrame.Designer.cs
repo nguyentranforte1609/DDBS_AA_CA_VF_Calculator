@@ -61,6 +61,7 @@
             this.btnCalculate = new ns1.BunifuThinButton2();
             this.groupBoxLogs = new System.Windows.Forms.GroupBox();
             this.textLogs = new System.Windows.Forms.TextBox();
+            this.richTextVF = new System.Windows.Forms.RichTextBox();
             this.panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnClose)).BeginInit();
             this.groupBoxUM.SuspendLayout();
@@ -71,6 +72,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataCA)).BeginInit();
             this.groupBoxAA.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataAA)).BeginInit();
+            this.groupBoxVF.SuspendLayout();
             this.groupBoxLogs.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -373,6 +375,7 @@
             // 
             // groupBoxVF
             // 
+            this.groupBoxVF.Controls.Add(this.richTextVF);
             this.groupBoxVF.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBoxVF.Location = new System.Drawing.Point(874, 48);
             this.groupBoxVF.Name = "groupBoxVF";
@@ -453,6 +456,14 @@
             this.textLogs.Size = new System.Drawing.Size(411, 378);
             this.textLogs.TabIndex = 0;
             // 
+            // richTextVF
+            // 
+            this.richTextVF.Location = new System.Drawing.Point(7, 16);
+            this.richTextVF.Name = "richTextVF";
+            this.richTextVF.Size = new System.Drawing.Size(411, 139);
+            this.richTextVF.TabIndex = 0;
+            this.richTextVF.Text = "";
+            // 
             // mainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -481,6 +492,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataCA)).EndInit();
             this.groupBoxAA.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataAA)).EndInit();
+            this.groupBoxVF.ResumeLayout(false);
             this.groupBoxLogs.ResumeLayout(false);
             this.groupBoxLogs.PerformLayout();
             this.ResumeLayout(false);
@@ -520,6 +532,7 @@
         private ns1.BunifuSeparator bunifuSeparator3;
         private ns1.BunifuSeparator bunifuSeparator2;
         private ns1.BunifuSeparator bunifuSeparator1;
+        private System.Windows.Forms.RichTextBox richTextVF;
     }
 }
 

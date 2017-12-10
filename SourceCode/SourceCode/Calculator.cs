@@ -25,7 +25,7 @@ namespace SourceCode
             {
                 for (int j = checkpoint; j < dataAA.Rows[i].Cells.Count; j++)
                 {
-                    int val = FindUsage(dataUM, dataAF, i, j);
+                    int val = FindUsageOfAAonUM(dataUM, dataAF, i, j);
                     dataAA.Rows[i].Cells[j].Value = val;
                     dataAA.Rows[j].Cells[i].Value = val;
                 }
@@ -33,7 +33,7 @@ namespace SourceCode
             }
         }
 
-        private int FindUsage(DataGridView dataUM, DataGridView dataAF, int first_A, int second_A)
+        private int FindUsageOfAAonUM(DataGridView dataUM, DataGridView dataAF, int first_A, int second_A)
         {
             //___If two attributes have access by queries, get the sum of that query access frequencies.
             int res = 0;
@@ -147,6 +147,101 @@ namespace SourceCode
                     }
                 }
             return dataAA;
+        }
+        #endregion
+
+        #region Calculate VF
+        internal int CalculateVF(DataGridView cloneUM, DataGridView dataAF, DataGridView dataCA)
+        {
+            int pointX = 0;
+            long maxZ = 0;
+            int EndPoint = dataCA.RowCount;
+            List<int> TQ = new List<int>();
+            List<int> BQ = new List<int>();
+            List<int> OQ = new List<int>();
+            for (int crrPoint = 0; crrPoint < EndPoint; crrPoint++)
+            {
+                TQ.Clear();
+                BQ.Clear();
+                OQ.Clear();
+                // Get queries for TQ & BQ. Leftovers will be put in OQ
+                for (int queryIndex = 0; queryIndex < cloneUM.RowCount; queryIndex++)
+                {
+                    int crrTASumQueryUsage = GetSumUsageOfQuery(cloneUM, queryIndex, 0, crrPoint);
+                    int crrBASumQueryUsage = GetSumUsageOfQuery(cloneUM, queryIndex, crrPoint, EndPoint);
+                    if (crrTASumQueryUsage > 0)
+                        TQ.Add(queryIndex);
+                    if (crrBASumQueryUsage > 0)
+                        BQ.Add(queryIndex);
+                    //Put queries that didn't access any attributes in OQ
+                    if (crrTASumQueryUsage == 0 && crrBASumQueryUsage == 0)
+                        OQ.Add(queryIndex);
+                }
+                for (int i = 0; i < TQ.Count; i++)
+                {   // Add any duplication in TQ & BQ to OQ
+                    if (BQ.IndexOf(TQ[i]) != -1)
+                        OQ.Add(TQ[i]);
+                }
+                for (int i = 0; i < OQ.Count; i++)
+                {   // Remove duplications in TQ & BQ
+                    if (TQ.IndexOf(OQ[i]) != -1 && BQ.IndexOf(OQ[i]) != -1)
+                    {
+                        TQ.RemoveAt(TQ.IndexOf(OQ[i]));
+                        BQ.RemoveAt(BQ.IndexOf(OQ[i]));
+                    }
+                }
+                // Calculate current Z
+                long crrZ = CalculateZ(TQ, BQ, OQ, dataAF);
+                if (maxZ < crrZ)
+                {
+                    maxZ = crrZ;
+                    pointX = crrPoint;
+                }
+            }
+            return pointX;
+        }
+
+        private long CalculateZ(List<int> TQ, List<int> BQ, List<int> OQ, DataGridView dataAF)
+        {
+            long Z = 0;
+            long CTQ = GetSumAccessOfQueriesSet(dataAF, TQ);
+            long CBQ = GetSumAccessOfQueriesSet(dataAF, BQ);
+            long COQ = GetSumAccessOfQueriesSet(dataAF, OQ);
+            // Apply formula to calculate Z
+            Z = CTQ * CBQ - COQ * COQ;
+            return Z;
+        }
+
+        private long GetSumAccessOfQueriesSet(DataGridView dataAF, List<int> queries)
+        {
+            int sum = 0;
+            for (int i = 0; i < queries.Count; i++)
+                sum += GetSumQueriesAccess(dataAF, queries[i]);
+            return sum;
+        }
+
+        private int GetSumUsageOfQuery(DataGridView cloneUM, int queryIndex, int start, int end)
+        {
+            int sum = 0;
+            for (int i = start; i < end; i++)
+                sum += int.Parse(cloneUM.Rows[queryIndex].Cells[i].Value.ToString());
+            return sum;
+        }
+
+        internal DataGridView ReorderColsOfUM(DataGridView cloneUM, List<int> orderList)
+        {
+            //Rearrange columns
+            for (int i = 0; i < cloneUM.RowCount; i++)
+                for (int j = 0; j < cloneUM.ColumnCount; j++)
+                {
+                    if (cloneUM.Rows[i].Cells[j].ColumnIndex < orderList[j])
+                    {
+                        object temp = cloneUM.Rows[i].Cells[j].Value;
+                        cloneUM.Rows[i].Cells[j].Value = cloneUM.Rows[i].Cells[orderList[j]].Value;
+                        cloneUM.Rows[i].Cells[orderList[j]].Value = temp;
+                    }
+                }
+            return cloneUM;
         }
         #endregion
         #endregion
