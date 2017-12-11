@@ -59,10 +59,10 @@ namespace SourceCode
         #endregion
 
         #region Calculate CA
-        internal List<int> CalculateCA(DataGridView dataAA)
+        internal List<int> CalculateCA(DataGridView dataCA)
         {
             DataGridViewRow ZeroRow = new DataGridViewRow();//This is A0 
-            for (int i = 0; i < dataAA.RowCount; i++)       //Add zero cells to A0
+            for (int i = 0; i < dataCA.RowCount; i++)       //Add zero cells to A0
             {
                 ZeroRow.Cells.Add(new DataGridViewTextBoxCell { Value = 0 });
             }
@@ -70,42 +70,38 @@ namespace SourceCode
             //___Place column 1 and 2 of AA in CA
             orderList.Add(0);
             orderList.Add(1);
-            for (int rowAA = 2; rowAA < dataAA.ColumnCount; rowAA++) //Since AA is symmetric matrix, row <=> col. 
+            for (int rowAA = 2; rowAA < dataCA.ColumnCount; rowAA++) //Since AA is symmetric matrix, row <=> col. 
             {
                 int highestCont = 0;    //Highest contribution
                 int position = 0;       //Position of current row which have highest contribution
-                for (int i = 0; i < orderList.Count; i++)
+                for (int i = -1; i < orderList.Count; i++)
                 {
-                    if (i == 0)
+                    int currentCont = 0;
+                    if (i == -1)
                     {
                         // Case (0,Ai,A1)
-                        highestCont = CalculateCont(ZeroRow, dataAA.Rows[rowAA], dataAA.Rows[orderList[i]]);
-                        position = i;
+                        currentCont = CalculateCont(ZeroRow, dataCA.Rows[rowAA], dataCA.Rows[orderList[0]]);
                     }
-                    if (i != 0)
+                    if (i == orderList.Count - 1)
                     {
-                        int currentCont = 0;
-                        if (i == orderList.Count - 1)
-                        {
-                            // Case (An,Ai,0)
-                            currentCont = CalculateCont(dataAA.Rows[orderList[i]], dataAA.Rows[rowAA], ZeroRow);
-                        }
-                        if (i != orderList.Count - 1)
-                        {
-                            // Normal Case
-                            currentCont = CalculateCont(dataAA.Rows[orderList[i]], dataAA.Rows[rowAA], dataAA.Rows[orderList[i + 1]]);
-                        }
-                        // if current contribution is higher, change value of highest contribution and position 
-                        if (highestCont < currentCont)
-                        {
-                            highestCont = currentCont;
-                            position = i;
-                        }
+                        // Case (An,Ai,0)
+                        currentCont = CalculateCont(dataCA.Rows[orderList[i]], dataCA.Rows[rowAA], ZeroRow);
+                    }
+                    if (i != orderList.Count - 1 && i != -1)
+                    {
+                        // Normal Case
+                        currentCont = CalculateCont(dataCA.Rows[orderList[i]], dataCA.Rows[rowAA], dataCA.Rows[orderList[i + 1]]);
+                    }
+                    // if current contribution is higher, change value of highest contribution and position 
+                    if (highestCont < currentCont)
+                    {
+                        highestCont = currentCont;
+                        position = i;
                     }
                 }
                 orderList.Insert(position+1, rowAA);    //Add position of crrent highest contribution to list
             }
-            DataGridView CA = RearrangeAAUsingListOrder(orderList,dataAA);
+            DataGridView CA = RearrangeAAUsingListOrder(orderList,dataCA);
             return orderList;
         }
 
@@ -155,7 +151,8 @@ namespace SourceCode
         {
             int pointX = 0;
             long maxZ = 0;
-            int EndPoint = dataCA.RowCount;
+            int EndPoint = dataCA.RowCount; // The final possible point on diagonal line of CA matrix. 
+                                            // Since each point on diagonal line is present as CA[i][i], saving one value i is enough.
             List<int> TQ = new List<int>();
             List<int> BQ = new List<int>();
             List<int> OQ = new List<int>();
@@ -167,8 +164,8 @@ namespace SourceCode
                 // Get queries for TQ & BQ. Leftovers will be put in OQ
                 for (int queryIndex = 0; queryIndex < cloneUM.RowCount; queryIndex++)
                 {
-                    int crrTASumQueryUsage = GetSumUsageOfQuery(cloneUM, queryIndex, 0, crrPoint);
-                    int crrBASumQueryUsage = GetSumUsageOfQuery(cloneUM, queryIndex, crrPoint, EndPoint);
+                    int crrTASumQueryUsage = GetSumUsageOfQueryOnAttributes(cloneUM, queryIndex, 0, crrPoint);
+                    int crrBASumQueryUsage = GetSumUsageOfQueryOnAttributes(cloneUM, queryIndex, crrPoint, EndPoint);
                     if (crrTASumQueryUsage > 0)
                         TQ.Add(queryIndex);
                     if (crrBASumQueryUsage > 0)
@@ -204,15 +201,15 @@ namespace SourceCode
         private long CalculateZ(List<int> TQ, List<int> BQ, List<int> OQ, DataGridView dataAF)
         {
             long Z = 0;
-            long CTQ = GetSumAccessOfQueriesSet(dataAF, TQ);
-            long CBQ = GetSumAccessOfQueriesSet(dataAF, BQ);
-            long COQ = GetSumAccessOfQueriesSet(dataAF, OQ);
+            long CTQ = GetSumOfAccessFrequenciesOnSite(dataAF, TQ);
+            long CBQ = GetSumOfAccessFrequenciesOnSite(dataAF, BQ);
+            long COQ = GetSumOfAccessFrequenciesOnSite(dataAF, OQ);
             // Apply formula to calculate Z
             Z = CTQ * CBQ - COQ * COQ;
             return Z;
         }
 
-        private long GetSumAccessOfQueriesSet(DataGridView dataAF, List<int> queries)
+        private long GetSumOfAccessFrequenciesOnSite(DataGridView dataAF, List<int> queries)
         {
             int sum = 0;
             for (int i = 0; i < queries.Count; i++)
@@ -220,7 +217,7 @@ namespace SourceCode
             return sum;
         }
 
-        private int GetSumUsageOfQuery(DataGridView cloneUM, int queryIndex, int start, int end)
+        private int GetSumUsageOfQueryOnAttributes(DataGridView cloneUM, int queryIndex, int start, int end)
         {
             int sum = 0;
             for (int i = start; i < end; i++)
