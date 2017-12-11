@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Calculator.cs" />
+    <Compile Include="LogTemplates.cs" />
     <Compile Include="mainFrame.cs">
       <SubType>Form</SubType>
     </Compile>

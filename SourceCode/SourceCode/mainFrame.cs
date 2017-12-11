@@ -14,11 +14,13 @@ namespace SourceCode
     public partial class mainFrame : Form
     {
         Calculator myCal;
+        public String mainFrameLogs;
         #region Initialization
         public mainFrame()
         {
             InitializeComponent();
-             myCal = new Calculator();
+            myCal = new Calculator();
+            mainFrameLogs = string.Empty;
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -27,11 +29,10 @@ namespace SourceCode
         }
         #endregion
 
-
-
         #region Main Functions
         private void buttonCreateMatrix_Click(object sender, EventArgs e)
         {
+            btnClear_Click(sender,e);
             //___Create matrices: UM, AF, AA, CA using user's input values
             if (checkInput())
             {
@@ -57,15 +58,20 @@ namespace SourceCode
             dataAA.Columns.Clear();
             dataCA.Rows.Clear();
             dataCA.Columns.Clear();
-            textLogs.Text = String.Empty;
+            mainFrameLogs = String.Empty;
+            richTextLogs.Text = string.Empty;
         }
 
         private void btnCalculate_Click(object sender, EventArgs e)
         {
+            mainFrameLogs = string.Empty;
             //___Calculate AA matrix
+            AddLogs("Calculating Attribute Affinity matrix: ");
             myCal.CalculateAA(dataUM, dataAF, dataAA);
+            AddLogs(myCal.calculatorLogs);
             //___Calculate CA matrix and return list of column order
-                //___Copy AA to CA
+            //___Copy AA to CA
+            AddLogs("Calculating Clustered Affinity matrix: ");
             for (int i = 0; i < dataAA.RowCount; i++)
             {
                 for (int j = 0; j < dataAA.Rows[i].Cells.Count; j++)
@@ -74,9 +80,11 @@ namespace SourceCode
                 }
             }
             List<int> orderList = myCal.CalculateCA(dataCA);
+            AddLogs(myCal.calculatorLogs);
             NameRowAndColumn(dataCA,'A','A', orderList);    // name CA columns
             //___Calculate VF matrix
                 //___Make a copy of UM
+            AddLogs("Calculating Vertical Fragmentations: ");
             DataGridView cloneUM = new DataGridView();
             cloneUM.ColumnCount = dataUM.ColumnCount;
             cloneUM.RowCount = dataUM.RowCount;
@@ -89,6 +97,7 @@ namespace SourceCode
             }
             cloneUM = myCal.ReorderColsOfUM(cloneUM, orderList);
             int pointX = myCal.CalculateVF(cloneUM, dataAF, dataCA);
+            AddLogs(myCal.calculatorLogs);
             string TA = string.Empty;
             string BA = string.Empty;
             for(int i = 0; i < pointX; i++)
@@ -112,6 +121,7 @@ namespace SourceCode
             dataAA.Refresh();
             dataCA.Update();
             dataCA.Refresh();
+            richTextLogs.Text = mainFrameLogs;
         }
         #endregion
 
@@ -152,6 +162,12 @@ namespace SourceCode
                 for (int i = 0; i < dataCA.RowCount; i++)       //Name rows
                     dataCA.Rows[i].HeaderCell.Value = col + (orderList[i] + 1).ToString();
             }
+        }
+
+        private void AddLogs(string line)
+        {
+            mainFrameLogs += line;
+            mainFrameLogs += Environment.NewLine;
         }
     }
     #endregion

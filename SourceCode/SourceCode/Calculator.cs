@@ -4,20 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LogTemplates;
 
 namespace SourceCode
 {
     class Calculator
-    {    
+    {
+        public string calculatorLogs;
         public Calculator()
         {
-
+            calculatorLogs = string.Empty;
         }
 
         #region Calculation
         #region Calculate AA
         internal void CalculateAA(DataGridView dataUM, DataGridView dataAF, DataGridView dataAA)
         {
+            calculatorLogs = string.Empty;
             dataAA.RowCount = dataUM.ColumnCount;
             dataAA.ColumnCount = dataUM.ColumnCount;
             int checkpoint = 0; //used to by pass duplicate cases. For example: calculating A[1][0] and A[0][1]
@@ -25,9 +28,11 @@ namespace SourceCode
             {
                 for (int j = checkpoint; j < dataAA.Rows[i].Cells.Count; j++)
                 {
+                    AddLogs(String.Format(LogTemplates.Constant.calculatingAAElements, (i+1).ToString(), (j+1).ToString()), false);
                     int val = FindUsageOfAAonUM(dataUM, dataAF, i, j);
                     dataAA.Rows[i].Cells[j].Value = val;
                     dataAA.Rows[j].Cells[i].Value = val;
+                    AddLogs(val.ToString(), true);
                 }
                 checkpoint++;
             }
@@ -39,11 +44,20 @@ namespace SourceCode
             int res = 0;
             for (int i = 0; i < dataUM.RowCount; i++)
             {
+                int sum = 0;
                 if (int.Parse(dataUM.Rows[i].Cells[first_A].Value.ToString()) == 1 
                     && int.Parse(dataUM.Rows[i].Cells[second_A].Value.ToString()) == 1)
                 {
-                    res += GetSumQueriesAccess(dataAF,i);
+                    sum = GetSumQueriesAccess(dataAF,i);
+                    res += sum;
                 }
+                //Logs
+                if (i != dataUM.RowCount - 1)
+                    AddLogs(sum.ToString() + "+");
+                else
+                    AddLogs(sum.ToString());
+                if (i == dataUM.RowCount - 1)
+                    AddLogs("=");
             }
             return res;
         }
@@ -61,6 +75,7 @@ namespace SourceCode
         #region Calculate CA
         internal List<int> CalculateCA(DataGridView dataCA)
         {
+            calculatorLogs = string.Empty;
             DataGridViewRow ZeroRow = new DataGridViewRow();//This is A0 
             for (int i = 0; i < dataCA.RowCount; i++)       //Add zero cells to A0
             {
@@ -72,6 +87,7 @@ namespace SourceCode
             orderList.Add(1);
             for (int rowAA = 2; rowAA < dataCA.ColumnCount; rowAA++) //Since AA is symmetric matrix, row <=> col. 
             {
+                AddLogs(String.Format(LogTemplates.Constant.considerColumn, (rowAA+1).ToString()),true);
                 int highestCont = 0;    //Highest contribution
                 int position = 0;       //Position of current row which have highest contribution
                 for (int i = -1; i < orderList.Count; i++)
@@ -80,17 +96,23 @@ namespace SourceCode
                     if (i == -1)
                     {
                         // Case (0,Ai,A1)
+                        AddLogs(String.Format(LogTemplates.Constant.contribution, "0", (rowAA + 1).ToString(), (orderList[0]+1).ToString()));
                         currentCont = CalculateCont(ZeroRow, dataCA.Rows[rowAA], dataCA.Rows[orderList[0]]);
+                        AddLogs(currentCont.ToString(), true);
                     }
                     if (i == orderList.Count - 1)
                     {
                         // Case (An,Ai,0)
+                        AddLogs(String.Format(LogTemplates.Constant.contribution, (orderList[i]+1).ToString(), (rowAA + 1).ToString(), "0"));
                         currentCont = CalculateCont(dataCA.Rows[orderList[i]], dataCA.Rows[rowAA], ZeroRow);
+                        AddLogs(currentCont.ToString(), true);
                     }
                     if (i != orderList.Count - 1 && i != -1)
                     {
                         // Normal Case
+                        AddLogs(String.Format(LogTemplates.Constant.contribution, (orderList[i]+1).ToString(), (rowAA + 1).ToString(), (orderList[i+1]+1).ToString()));
                         currentCont = CalculateCont(dataCA.Rows[orderList[i]], dataCA.Rows[rowAA], dataCA.Rows[orderList[i + 1]]);
+                        AddLogs(currentCont.ToString(), true);
                     }
                     // if current contribution is higher, change value of highest contribution and position 
                     if (highestCont < currentCont)
@@ -149,6 +171,7 @@ namespace SourceCode
         #region Calculate VF
         internal int CalculateVF(DataGridView cloneUM, DataGridView dataAF, DataGridView dataCA)
         {
+            calculatorLogs = string.Empty;
             int pointX = 0;
             long maxZ = 0;
             int EndPoint = dataCA.RowCount; // The final possible point on diagonal line of CA matrix. 
@@ -156,8 +179,9 @@ namespace SourceCode
             List<int> TQ = new List<int>();
             List<int> BQ = new List<int>();
             List<int> OQ = new List<int>();
-            for (int crrPoint = 0; crrPoint < EndPoint; crrPoint++)
+            for (int crrPoint = 1; crrPoint < EndPoint; crrPoint++)
             {
+                AddLogs(String.Format(LogTemplates.Constant.choosePointX, (crrPoint).ToString()), true);
                 TQ.Clear();
                 BQ.Clear();
                 OQ.Clear();
@@ -187,6 +211,10 @@ namespace SourceCode
                         BQ.RemoveAt(BQ.IndexOf(OQ[i]));
                     }
                 }
+                //Logs
+                AddLogs("TQ = " + GenerateStringSetOfQueries(TQ),true);
+                AddLogs("BQ = " + GenerateStringSetOfQueries(BQ), true);
+                AddLogs("OQ = " + GenerateStringSetOfQueries(OQ), true);
                 // Calculate current Z
                 long crrZ = CalculateZ(TQ, BQ, OQ, dataAF);
                 if (maxZ < crrZ)
@@ -204,8 +232,12 @@ namespace SourceCode
             long CTQ = GetSumOfAccessFrequenciesOnSite(dataAF, TQ);
             long CBQ = GetSumOfAccessFrequenciesOnSite(dataAF, BQ);
             long COQ = GetSumOfAccessFrequenciesOnSite(dataAF, OQ);
+            AddLogs("CTQ = " + CTQ.ToString(),true);
+            AddLogs("CBQ = " + CBQ.ToString(),true);
+            AddLogs("COQ = " + COQ.ToString(),true);
             // Apply formula to calculate Z
             Z = CTQ * CBQ - COQ * COQ;
+            AddLogs("z = " + Z.ToString(), true);
             return Z;
         }
 
@@ -241,6 +273,25 @@ namespace SourceCode
             return cloneUM;
         }
         #endregion
+        #endregion
+
+
+
+        #region Utilities
+        private void AddLogs(string line, bool EOL = false)
+        {
+            calculatorLogs += line;
+            if (EOL == true)
+                calculatorLogs += Environment.NewLine;
+        }
+
+        private string GenerateStringSetOfQueries(List<int> listQueries)
+        {
+            string res = String.Empty;
+            for (int i = 0; i < listQueries.Count; i++)
+                res += "q" + (listQueries[i]+1).ToString();
+            return res;
+        }
         #endregion
     }
 }

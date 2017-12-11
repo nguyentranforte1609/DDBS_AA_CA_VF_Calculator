@@ -57,11 +57,11 @@
             this.groupBoxAA = new System.Windows.Forms.GroupBox();
             this.dataAA = new System.Windows.Forms.DataGridView();
             this.groupBoxVF = new System.Windows.Forms.GroupBox();
+            this.richTextVF = new System.Windows.Forms.RichTextBox();
             this.btnClear = new ns1.BunifuThinButton2();
             this.btnCalculate = new ns1.BunifuThinButton2();
             this.groupBoxLogs = new System.Windows.Forms.GroupBox();
-            this.textLogs = new System.Windows.Forms.TextBox();
-            this.richTextVF = new System.Windows.Forms.RichTextBox();
+            this.richTextLogs = new System.Windows.Forms.RichTextBox();
             this.panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.btnClose)).BeginInit();
             this.groupBoxUM.SuspendLayout();
@@ -384,6 +384,16 @@
             this.groupBoxVF.TabStop = false;
             this.groupBoxVF.Text = "Vertical Fragmentation :";
             // 
+            // richTextVF
+            // 
+            this.richTextVF.Location = new System.Drawing.Point(7, 16);
+            this.richTextVF.Name = "richTextVF";
+            this.richTextVF.ReadOnly = true;
+            this.richTextVF.Size = new System.Drawing.Size(411, 139);
+            this.richTextVF.TabIndex = 0;
+            this.richTextVF.Tag = "";
+            this.richTextVF.Text = "";
+            // 
             // btnClear
             // 
             this.btnClear.ActiveBorderThickness = 1;
@@ -438,7 +448,7 @@
             // 
             // groupBoxLogs
             // 
-            this.groupBoxLogs.Controls.Add(this.textLogs);
+            this.groupBoxLogs.Controls.Add(this.richTextLogs);
             this.groupBoxLogs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBoxLogs.Location = new System.Drawing.Point(874, 215);
             this.groupBoxLogs.Name = "groupBoxLogs";
@@ -447,22 +457,15 @@
             this.groupBoxLogs.TabStop = false;
             this.groupBoxLogs.Text = "Logs :";
             // 
-            // textLogs
+            // richTextLogs
             // 
-            this.textLogs.Location = new System.Drawing.Point(7, 19);
-            this.textLogs.Multiline = true;
-            this.textLogs.Name = "textLogs";
-            this.textLogs.ReadOnly = true;
-            this.textLogs.Size = new System.Drawing.Size(411, 378);
-            this.textLogs.TabIndex = 0;
-            // 
-            // richTextVF
-            // 
-            this.richTextVF.Location = new System.Drawing.Point(7, 16);
-            this.richTextVF.Name = "richTextVF";
-            this.richTextVF.Size = new System.Drawing.Size(411, 139);
-            this.richTextVF.TabIndex = 0;
-            this.richTextVF.Text = "";
+            this.richTextLogs.Location = new System.Drawing.Point(7, 19);
+            this.richTextLogs.Name = "richTextLogs";
+            this.richTextLogs.ReadOnly = true;
+            this.richTextLogs.Size = new System.Drawing.Size(411, 392);
+            this.richTextLogs.TabIndex = 1;
+            this.richTextLogs.Tag = "411, 392";
+            this.richTextLogs.Text = "";
             // 
             // mainFrame
             // 
@@ -494,7 +497,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataAA)).EndInit();
             this.groupBoxVF.ResumeLayout(false);
             this.groupBoxLogs.ResumeLayout(false);
-            this.groupBoxLogs.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -517,7 +519,6 @@
         private System.Windows.Forms.DataGridView dataAA;
         private System.Windows.Forms.DataGridView dataAF;
         private System.Windows.Forms.GroupBox groupBoxLogs;
-        private System.Windows.Forms.TextBox textLogs;
         private System.Windows.Forms.Label labelAtributes;
         private System.Windows.Forms.TextBox textAttributes;
         private System.Windows.Forms.Label label;
@@ -533,6 +534,7 @@
         private ns1.BunifuSeparator bunifuSeparator2;
         private ns1.BunifuSeparator bunifuSeparator1;
         private System.Windows.Forms.RichTextBox richTextVF;
+        public System.Windows.Forms.RichTextBox richTextLogs;
     }
 }
 
