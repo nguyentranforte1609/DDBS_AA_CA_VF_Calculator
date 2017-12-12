@@ -83,6 +83,7 @@ namespace SourceCode
             }
             List<int> orderList = new List<int>();  //List of row order <=> column order
             //___Place column 1 and 2 of AA in CA
+            AddLogs(LogTemplates.Constant.putA1A2inCA,true);
             orderList.Add(0);
             orderList.Add(1);
             for (int rowAA = 2; rowAA < dataCA.ColumnCount; rowAA++) //Since AA is symmetric matrix, row <=> col. 
@@ -122,6 +123,8 @@ namespace SourceCode
                     }
                 }
                 orderList.Insert(position+1, rowAA);    //Add position of crrent highest contribution to list
+                AddLogs(String.Format(LogTemplates.Constant.informNewOrder, GenerateStringSetOfQueries(orderList,"A"), true));
+                AddLogs(" ", true);
             }
             DataGridView CA = RearrangeAAUsingListOrder(orderList,dataCA);
             return orderList;
@@ -212,9 +215,9 @@ namespace SourceCode
                     }
                 }
                 //Logs
-                AddLogs("TQ = " + GenerateStringSetOfQueries(TQ),true);
-                AddLogs("BQ = " + GenerateStringSetOfQueries(BQ), true);
-                AddLogs("OQ = " + GenerateStringSetOfQueries(OQ), true);
+                AddLogs("\tTQ = {" + GenerateStringSetOfQueries(TQ, "q") + "}",true);
+                AddLogs("\tBQ = {" + GenerateStringSetOfQueries(BQ, "q") + "}", true);
+                AddLogs("\tOQ = {" + GenerateStringSetOfQueries(OQ, "q") + "}", true);
                 // Calculate current Z
                 long crrZ = CalculateZ(TQ, BQ, OQ, dataAF);
                 if (maxZ < crrZ)
@@ -223,6 +226,8 @@ namespace SourceCode
                     pointX = crrPoint;
                 }
             }
+            AddLogs("",true);
+            AddLogs(String.Format(LogTemplates.Constant.informPointX, pointX), true);
             return pointX;
         }
 
@@ -232,12 +237,12 @@ namespace SourceCode
             long CTQ = GetSumOfAccessFrequenciesOnSite(dataAF, TQ);
             long CBQ = GetSumOfAccessFrequenciesOnSite(dataAF, BQ);
             long COQ = GetSumOfAccessFrequenciesOnSite(dataAF, OQ);
-            AddLogs("CTQ = " + CTQ.ToString(),true);
-            AddLogs("CBQ = " + CBQ.ToString(),true);
-            AddLogs("COQ = " + COQ.ToString(),true);
+            AddLogs("\tCTQ = " + CTQ.ToString(),true);
+            AddLogs("\tCBQ = " + CBQ.ToString(),true);
+            AddLogs("\tCOQ = " + COQ.ToString(),true);
             // Apply formula to calculate Z
             Z = CTQ * CBQ - COQ * COQ;
-            AddLogs("z = " + Z.ToString(), true);
+            AddLogs("\tz = " + Z.ToString(), true);
             return Z;
         }
 
@@ -285,11 +290,15 @@ namespace SourceCode
                 calculatorLogs += Environment.NewLine;
         }
 
-        private string GenerateStringSetOfQueries(List<int> listQueries)
+        private string GenerateStringSetOfQueries(List<int> listQueries, string symbol = "")
         {
             string res = String.Empty;
             for (int i = 0; i < listQueries.Count; i++)
-                res += "q" + (listQueries[i]+1).ToString();
+            {
+                res += symbol + (listQueries[i] + 1).ToString() + " ";
+                if (i < listQueries.Count - 1)
+                    res += ",";
+            }
             return res;
         }
         #endregion
