@@ -347,6 +347,7 @@
             this.dataCA.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataCA.Location = new System.Drawing.Point(11, 15);
             this.dataCA.Name = "dataCA";
+            this.dataCA.ReadOnly = true;
             this.dataCA.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dataCA.Size = new System.Drawing.Size(402, 268);
             this.dataCA.TabIndex = 2;
@@ -369,6 +370,7 @@
             this.dataAA.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataAA.Location = new System.Drawing.Point(11, 16);
             this.dataAA.Name = "dataAA";
+            this.dataAA.ReadOnly = true;
             this.dataAA.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dataAA.Size = new System.Drawing.Size(402, 267);
             this.dataAA.TabIndex = 1;

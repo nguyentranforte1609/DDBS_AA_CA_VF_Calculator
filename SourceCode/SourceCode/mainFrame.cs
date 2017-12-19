@@ -64,65 +64,69 @@ namespace SourceCode
 
         private void btnCalculate_Click(object sender, EventArgs e)
         {
-            mainFrameLogs = string.Empty;
-            //___Calculate AA matrix
-            AddLogs("Calculating Attribute Affinity matrix: ");
-            myCal.CalculateAA(dataUM, dataAF, dataAA);
-            AddLogs(myCal.calculatorLogs);
-            //___Calculate CA matrix and return list of column order
-            //___Copy AA to CA
-            AddLogs("Calculating Clustered Affinity matrix: ");
-            for (int i = 0; i < dataAA.RowCount; i++)
+            if (CheckDataValidity())
             {
-                for (int j = 0; j < dataAA.Rows[i].Cells.Count; j++)
+                mainFrameLogs = string.Empty;
+                //___Calculate AA matrix
+                AddLogs("Calculating Attribute Affinity matrix: ");
+                myCal.CalculateAA(dataUM, dataAF, dataAA);
+                AddLogs(myCal.calculatorLogs);
+                //___Calculate CA matrix and return list of column order
+                //___Copy AA to CA
+                AddLogs("Calculating Clustered Affinity matrix: ");
+                for (int i = 0; i < dataAA.RowCount; i++)
                 {
-                    dataCA.Rows[i].Cells[j].Value = dataAA.Rows[i].Cells[j].Value;
+                    for (int j = 0; j < dataAA.Rows[i].Cells.Count; j++)
+                    {
+                        dataCA.Rows[i].Cells[j].Value = dataAA.Rows[i].Cells[j].Value;
+                    }
                 }
-            }
-            List<int> orderList = myCal.CalculateCA(dataCA);
-            AddLogs(myCal.calculatorLogs);
-            NameRowAndColumn(dataCA,'A','A', orderList);    // name CA columns
-            //___Calculate VF matrix
-                //___Make a copy of UM
-            AddLogs("Calculating Vertical Fragmentations: ");
-            DataGridView cloneUM = new DataGridView();
-            cloneUM.ColumnCount = dataUM.ColumnCount;
-            cloneUM.RowCount = dataUM.RowCount;
-            for (int i = 0; i < dataUM.RowCount; i++)
-            {
-                for (int j = 0; j < dataUM.Rows[i].Cells.Count; j++)
+                List<int> orderList = myCal.CalculateCA(dataCA);
+                AddLogs(myCal.calculatorLogs);
+                NameRowAndColumn(dataCA, 'A', 'A', orderList);    // name CA columns
+                                                                  //___Calculate VF matrix
+                                                                  //___Make a copy of UM
+                AddLogs("Calculating Vertical Fragmentations: ");
+                DataGridView cloneUM = new DataGridView();
+                cloneUM.ColumnCount = dataUM.ColumnCount;
+                cloneUM.RowCount = dataUM.RowCount;
+                for (int i = 0; i < dataUM.RowCount; i++)
                 {
-                    cloneUM.Rows[i].Cells[j].Value = dataUM.Rows[i].Cells[j].Value;
+                    for (int j = 0; j < dataUM.Rows[i].Cells.Count; j++)
+                    {
+                        cloneUM.Rows[i].Cells[j].Value = dataUM.Rows[i].Cells[j].Value;
+                    }
                 }
+                cloneUM = myCal.ReorderColsOfUM(cloneUM, orderList);
+                int pointX = myCal.CalculateVF(cloneUM, dataAF, dataCA);
+                AddLogs(myCal.calculatorLogs);
+                string TA = string.Empty;
+                string BA = string.Empty;
+                for (int i = 0; i < pointX; i++)
+                {
+                    TA += dataCA.Columns[i].HeaderText;
+                    if (i != pointX - 1)
+                        TA += ",";
+                }
+                for (int i = pointX; i < dataCA.ColumnCount; i++)
+                {
+                    BA += dataCA.Columns[i].HeaderText;
+                    if (i != dataCA.ColumnCount - 1)
+                        BA += ",";
+                }
+                richTextVF.Text = "{" + TA + "}";
+                richTextVF.Text += Environment.NewLine;
+                richTextVF.Text += Environment.NewLine;
+                richTextVF.Text += "{" + BA + "}";
+                //___Update views
+                dataAA.Update();
+                dataAA.Refresh();
+                dataCA.Update();
+                dataCA.Refresh();
+                richTextLogs.Text = mainFrameLogs;
             }
-            cloneUM = myCal.ReorderColsOfUM(cloneUM, orderList);
-            int pointX = myCal.CalculateVF(cloneUM, dataAF, dataCA);
-            AddLogs(myCal.calculatorLogs);
-            string TA = string.Empty;
-            string BA = string.Empty;
-            for(int i = 0; i < pointX; i++)
-            {
-                TA += dataCA.Columns[i].HeaderText;
-                if (i != pointX - 1)
-                    TA += ",";
-            }
-            for (int i = pointX; i < dataCA.ColumnCount; i++)
-            {
-                BA += dataCA.Columns[i].HeaderText;
-                if (i != dataCA.ColumnCount - 1)
-                    BA += ",";
-            }
-            richTextVF.Text = "{" + TA + "}";
-            richTextVF.Text += Environment.NewLine;
-            richTextVF.Text += Environment.NewLine;
-            richTextVF.Text += "{" + BA + "}";
-            //___Update views
-            dataAA.Update();
-            dataAA.Refresh();
-            dataCA.Update();
-            dataCA.Refresh();
-            richTextLogs.Text = mainFrameLogs;
         }
+
         #endregion
 
         #region Utilities
@@ -168,6 +172,47 @@ namespace SourceCode
         {
             mainFrameLogs += line;
             mainFrameLogs += Environment.NewLine;
+        }
+
+        private bool CheckDataValidity()
+        {
+            bool isValid = true;
+            string message =    "Usage Matrix or Access Frequency Matrix are not completely fulfilled.\n";
+            message +=          "Please make sure that you have pressed Enter after modified any matrix.\n";
+            message +=          "Do you want to fill empty slots with 0?";
+            if (!CheckValidityofCells(dataUM) || !CheckValidityofCells(dataAF))
+            {
+                DialogResult userChoice = MessageBox.Show(message, "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1);
+                if (userChoice == DialogResult.Yes)
+                {
+                    FillMatricesWithZero(dataUM);
+                    FillMatricesWithZero(dataAF);
+                }
+                else
+                    isValid = false;
+            }
+            return isValid;
+        }
+
+        private void FillMatricesWithZero(DataGridView matrix)
+        {
+            for (int i = 0; i < matrix.RowCount; i++)
+                for (int j = 0; j < matrix.Rows[i].Cells.Count; j++)
+                    if (string.IsNullOrEmpty(matrix.Rows[i].Cells[j].Value as string))
+                        matrix.Rows[i].Cells[j].Value = 0;
+        }
+
+        private bool CheckValidityofCells(DataGridView matrix)
+        {
+            bool isValid = true;
+            for (int i = 0; i < matrix.RowCount; i++)
+                for (int j = 0; j < matrix.Rows[i].Cells.Count; j++)
+                    if (string.IsNullOrEmpty(matrix.Rows[i].Cells[j].Value as string))
+                    {
+                        isValid = false;
+                        break;
+                    }
+            return isValid;
         }
     }
     #endregion
