@@ -175,8 +175,8 @@ namespace SourceCode
         internal int CalculateVF(DataGridView cloneUM, DataGridView dataAF, DataGridView dataCA)
         {
             calculatorLogs = string.Empty;
-            int pointX = 0;
-            long maxZ = 0;
+            int? pointX = null;
+            long? maxZ = null;
             int EndPoint = dataCA.RowCount; // The final possible point on diagonal line of CA matrix. 
                                             // Since each point on diagonal line is present as CA[i][i], saving one value i is enough.
             List<int> TQ = new List<int>();
@@ -220,6 +220,13 @@ namespace SourceCode
                 AddLogs("\tOQ = {" + GenerateStringSetOfQueries(OQ, "q") + "}", true);
                 // Calculate current Z
                 long crrZ = CalculateZ(TQ, BQ, OQ, dataAF);
+                if (pointX == null && maxZ == null)
+                {
+                    // MaxZ & pointX don't have any value in the first loop.
+                    maxZ = crrZ;
+                    pointX = crrPoint;
+                    continue;
+                }
                 if (maxZ < crrZ)
                 {
                     maxZ = crrZ;
@@ -228,7 +235,7 @@ namespace SourceCode
             }
             AddLogs("",true);
             AddLogs(String.Format(LogTemplates.Constant.informPointX, pointX), true);
-            return pointX;
+            return int.Parse(pointX.ToString());
         }
 
         private long CalculateZ(List<int> TQ, List<int> BQ, List<int> OQ, DataGridView dataAF)
